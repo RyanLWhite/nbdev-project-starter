@@ -49,14 +49,9 @@ git add . && git commit -m "..." && git push
 3. **Never edit README.md** — edit `nbs/index.ipynb` instead
 4. **Run `nbdev-prepare` before every commit**
 
-## Common Issues
+## Troubleshooting
 
-| Problem | Quick Fix |
-|---------|-----------|
-| `command not found: nbdev-*` | `source venv/bin/activate` |
-| `ModuleNotFoundError` | `pip install -e '.[dev]'` |
-| Tests failing | `nbdev-test` to see errors |
-| README not updating | Edit `nbs/index.ipynb`, not README.md |
+See [CONTRIBUTING.md](CONTRIBUTING.md#troubleshooting) for solutions to common issues (ModuleNotFoundError, command not found, hooks, tests, README not updating).
 
 ## Learn More
 

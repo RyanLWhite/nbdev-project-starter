@@ -100,46 +100,11 @@ GitHub Actions will automatically run tests, build documentation, and deploy to 
 
 ## Notebook Conventions
 
-### Export Directive
+The key directives: `#|export` (send to module), `#|hide` (run but hide from docs), `#|default_exp module_name` (declare target module). Cells with no directive appear in docs but aren't exported — use these for tests and demos.
 
-Mark cells to be exported to Python modules:
+Each function follows the **explore → export → demo** pattern. Write exploration cells to understand the problem, then the `#|export` function, then demo/test cells to validate.
 
-```python
-#|export
-def my_function():
-    """This will be exported to the Python module."""
-    return "Hello"
-```
-
-### Hide Exploratory Code
-
-Hide cells that shouldn't appear in docs:
-
-```python
-#|hide
-print("Debug info")
-```
-
-### Test Inline
-
-Use assertions to test your code:
-
-```python
-#|export
-def add(a, b):
-    return a + b
-
-# Test (this cell doesn't get exported)
-assert add(2, 3) == 5
-from fastcore.test import test_eq
-test_eq(add(10, 20), 30)
-```
-
-### Document as You Code
-
-Add markdown cells explaining what your code does. These become documentation!
-
-For the full notebook style guide, see [docs/notebook-style-guide.md](docs/notebook-style-guide.md).
+For the full style guide (section structure, docstrings, cell labeling, anti-patterns), see [docs/notebook-style-guide.md](docs/notebook-style-guide.md).
 
 ## Common Tasks
 
