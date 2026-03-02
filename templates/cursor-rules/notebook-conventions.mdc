@@ -1,0 +1,69 @@
+---
+description: Notebook structure, cell types, and code style for nbdev notebooks
+globs: nbs/**/*.ipynb
+alwaysApply: false
+---
+
+# Notebook Conventions
+
+## Notebook Structure
+
+1. **Header** (markdown): `# Module Name` + one-line description
+2. **Module declaration**: `#|default_exp module_name`
+3. **Imports**: `#|hide` cell for nbdev imports, then `#|export` cell for library imports
+4. **Implementation sections**: numbered, each following the pattern below
+5. **Summary**: `## Summary and Next Steps` at the end
+
+## Section Pattern
+
+Each function follows explore → export → demo:
+
+```
+## N. Feature Name
+
+### 🔍 Explore: Understand the problem
+[investigation cells — no #|export]
+
+### 🔍 Explore: Build the function_name()
+[final exploration before implementation]
+
+#|export
+def function_name(...):
+    """Google-style docstring."""
+    ...
+
+### ✅ Demo: Test function_name()
+[validation cells — no #|export]
+```
+
+## Docstring Style
+
+Google-style with Args, Returns, Raises, Note sections:
+```python
+def function_name(arg1, arg2):
+    """
+    Brief one-line description.
+
+    Longer context about behavior and purpose.
+
+    Args:
+        arg1: Description
+        arg2: Description
+
+    Returns:
+        Description of return value
+    """
+```
+
+## Code Style
+
+- **Naming**: descriptive `snake_case` for functions/variables, `UPPER_CASE` for constants
+- **Imports**: explicit imports (not `import *`), grouped: stdlib → third-party → local
+- **Comments**: explain WHY, not WHAT. No narration comments.
+- **Magic values**: extract to constants or configuration
+
+## Markdown Headers
+
+- `#` — notebook title (once)
+- `##` — major sections (numbered: "1. Feature Name")
+- `###` — cell labels (🔍 Explore: / ✅ Demo:)
