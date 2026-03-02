@@ -4,6 +4,8 @@
 
 Complete reference for setting up a new nbdev project from scratch, following fastai practices.
 
+**Note:** This guide covers nbdev infrastructure only (venv, tools, `nbdev-new`, `pyproject.toml`, hooks). `create-project.sh` additionally installs Cursor rules, CONTRIBUTING.md, GETTING-STARTED.md, notebook style guide, autoreload docs, and Quarto config. If you follow this manual guide, copy those files from the `templates/` directory afterward, or see the [What the Script Does](README.md#what-the-script-does) section in the README for the full list.
+
 ---
 
 ## Prerequisites

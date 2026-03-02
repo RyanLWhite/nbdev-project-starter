@@ -94,8 +94,7 @@ GitHub Actions will automatically run tests, build documentation, and deploy to 
 ├── {{MODULE_NAME}}/       # Exported Python modules (auto-generated)
 │   ├── core.py           # From 00_core.ipynb
 │   └── ...
-├── docs/                  # Documentation and guides
-└── scripts/               # Automation scripts (if any)
+└── docs/                  # Documentation and guides
 ```
 
 ## Notebook Conventions
@@ -113,6 +112,7 @@ For the full style guide (section structure, docstrings, cell labeling, anti-pat
 | Export notebooks to .py | `nbdev-export` |
 | Run all tests | `nbdev-test` |
 | Clean notebook metadata | `nbdev-clean` |
+| Build documentation | `nbdev-docs` |
 | Preview documentation | `nbdev-preview` |
 | Full prepare (before commit) | `nbdev-prepare` |
 
@@ -120,9 +120,12 @@ For the full style guide (section structure, docstrings, cell labeling, anti-pat
 
 ### "ModuleNotFoundError: {{MODULE_NAME}}"
 
+Most common cause — package not installed in editable mode:
 ```bash
 pip install -e '.[dev]'
 ```
+
+If that doesn't help, the module directory name may not match `pyproject.toml`. Verify the directory `{{MODULE_NAME}}/` exists and matches the `lib_name` / `lib_path` in `pyproject.toml`.
 
 ### "command not found: nbdev-*"
 

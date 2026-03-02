@@ -277,6 +277,21 @@ TOML
 
 print_ok "pyproject.toml configured"
 
+# --- Create LICENSE file ---
+
+print_header "Creating LICENSE File"
+
+LICENSE_KEY=$(echo "$LICENSE" | tr '[:upper:]' '[:lower:]')
+YEAR=$(date +%Y)
+if gh api "/licenses/$LICENSE_KEY" --jq '.body' 2>/dev/null \
+    | sed -e "s/\[year\]/$YEAR/g" -e "s/\[fullname\]/$AUTHOR_NAME/g" > LICENSE \
+    && [ -s LICENSE ]; then
+    print_ok "LICENSE file created ($LICENSE)"
+else
+    print_info "Could not fetch license text for '$LICENSE' — create LICENSE file manually"
+    rm -f LICENSE
+fi
+
 # --- Copy templates ---
 
 print_header "Installing Project Templates"
@@ -314,7 +329,9 @@ if [ -d "$TEMPLATES_DIR" ]; then
     cp "$TEMPLATES_DIR/docs/decision-template.md" "docs/decision-template.md"
     print_ok "Documentation"
 
-    # Quarto config
+    # Quarto config — intentionally overwrites nbdev-new's default.
+    # If nbdev-new adds new required Quarto fields in the future,
+    # they may need to be merged into templates/nbdev.yml.
     copy_template "$TEMPLATES_DIR/nbdev.yml" "nbs/nbdev.yml"
     print_ok "Quarto config (nbs/nbdev.yml)"
 else
