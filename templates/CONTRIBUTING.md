@@ -44,7 +44,7 @@ This project strictly follows the **nbdev way** and **fastai practices**:
 - **Notebooks are source of truth** — all code lives in `nbs/` notebooks, not `.py` files
 - **Tests are in notebooks** — every code cell is a test unless marked otherwise
 - **Documentation is in notebooks** — notebooks generate both code and docs
-- **Export to Python** — notebooks export to Python modules via `#|export` directive
+- **Export to Python** — notebooks export to Python modules via `#| export` directive
 - **Autoreload** — consumer/orchestrator notebooks use `%autoreload 2`
 
 **Key principle:** Edit notebooks, never edit the exported `.py` files directly!
@@ -99,9 +99,9 @@ GitHub Actions will automatically run tests, build documentation, and deploy to 
 
 ## Notebook Conventions
 
-The key directives: `#|export` (send to module), `#|hide` (run but hide from docs), `#|default_exp module_name` (declare target module). Cells with no directive appear in docs but aren't exported — use these for tests and demos.
+The key directives: `#| export` (send to module), `#| hide` (run but hide from docs), `#| default_exp module_name` (declare target module). Cells with no directive appear in docs but aren't exported — use these for tests and demos.
 
-Each function follows the **explore → export → demo** pattern. Write exploration cells to understand the problem, then the `#|export` function, then demo/test cells to validate.
+Each function follows the **explore → export → demo** pattern. Write exploration cells to understand the problem, then the `#| export` function, then demo/test cells to validate.
 
 For the full style guide (section structure, docstrings, cell labeling, anti-patterns), see [docs/notebook-style-guide.md](docs/notebook-style-guide.md).
 

@@ -9,8 +9,8 @@ alwaysApply: false
 ## Notebook Structure
 
 1. **Header** (markdown): `# Module Name` + one-line description
-2. **Module declaration**: `#|default_exp module_name`
-3. **Imports**: `#|hide` cell for nbdev imports, then `#|export` cell for library imports
+2. **Module declaration**: `#| default_exp module_name`
+3. **Imports**: `#| hide` cell for nbdev imports, then `#| export` cell for library imports
 4. **Implementation sections**: numbered, each following the pattern below
 5. **Summary**: `## Summary and Next Steps` at the end
 
@@ -22,18 +22,18 @@ Each function follows explore → export → demo:
 ## N. Feature Name
 
 ### 🔍 Explore: Understand the problem
-[investigation cells — no #|export]
+[investigation cells — no #| export]
 
 ### 🔍 Explore: Build the function_name()
 [final exploration before implementation]
 
-#|export
+#| export
 def function_name(...):
     """Google-style docstring."""
     ...
 
 ### ✅ Demo: Test function_name()
-[validation cells — no #|export]
+[validation cells — no #| export]
 ```
 
 ## Docstring Style

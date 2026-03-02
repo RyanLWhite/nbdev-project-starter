@@ -97,7 +97,7 @@ These conventions are encoded in the Cursor rules, style guide, and contributing
 | Convention | Source |
 |---|---|
 | Notebooks are source of truth; never edit `.py` files | Cursor rule, CONTRIBUTING.md |
-| `#\|export`, `#\|hide`, `#\|default_exp` directives | Cursor rule |
+| `#\| export`, `#\| hide`, `#\| default_exp` directives | Cursor rule |
 | `nbdev-prepare` before every commit | CONTRIBUTING.md |
 | Explore → Export → Demo notebook pattern | Cursor rule, style guide |
 | Google-style docstrings | Style guide |

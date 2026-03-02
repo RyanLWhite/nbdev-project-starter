@@ -6,7 +6,7 @@
 
 Notebooks serve three purposes:
 1. **Documentation** — explaining concepts and approaches
-2. **Implementation** — containing the actual source code (with `#|export`)
+2. **Implementation** — containing the actual source code (with `#| export`)
 3. **Testing** — demonstrating and validating functionality
 
 ## Notebook Structure
@@ -60,7 +60,7 @@ Brief description of what this section accomplishes.
 ### 🔍 Explore: [Build the function_name()]
 [Final exploration before implementation]
 
-[#|export function definition]
+[#| export function definition]
 
 ### ✅ Demo: [What we're testing]
 [Demo cells that test the function]
@@ -85,7 +85,7 @@ Each function will have multiple cell types dedicated to it, so that this sectio
 - Come *before* the functionality they support
 - May contain temporary/experimental code
 - Focus on investigation and learning
-- No `#|export` directive
+- No `#| export` directive
 
 **Examples**:
 ```markdown
@@ -113,7 +113,7 @@ The "Build the..." variant indicates we're about to define the exported function
 - Call the exported function(s)
 - Show expected output
 - May include assertions or comparisons
-- No `#|export` directive
+- No `#| export` directive
 
 **Examples**:
 ```markdown
@@ -124,12 +124,12 @@ The "Build the..." variant indicates we're about to define the exported function
 ### ✅ Demo: Visual demonstration of output
 ```
 
-### Export Cells: `#|export`
+### Export Cells: `#| export`
 
 **Purpose**: Define production code that will be exported to the module
 
 **Characteristics**:
-- Include `#|export` directive at the top
+- Include `#| export` directive at the top
 - Contain complete, production-ready functions
 - Include comprehensive docstrings
 - Follow the exploration cells that led to them
@@ -153,7 +153,7 @@ Brief description
 ### 🔍 Explore: Build the function_name()
 [Final exploration showing the logic]
 
-[#|export function definition with full docstring]
+[#| export function definition with full docstring]
 
 ### ✅ Demo: Test function_name()
 [Basic test]
@@ -259,7 +259,7 @@ Brief description of what comes next.
 ## Anti-Patterns to Avoid
 
 - **Don't** use generic comments like "# Test function" → **Do** use labeled headers: "### ✅ Demo: Test process_data()"
-- **Don't** mix exploration and production code in one cell → **Do** separate exploration cells from `#|export` cells
+- **Don't** mix exploration and production code in one cell → **Do** separate exploration cells from `#| export` cells
 - **Don't** leave magic strings scattered through code → **Do** extract to constants
 - **Don't** create new notebooks/modules without considering cohesion → **Do** group related functionality in the same module
 
