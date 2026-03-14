@@ -6,64 +6,60 @@ alwaysApply: false
 
 # Notebook Conventions
 
-## Notebook Structure
+## Function Section Pattern
 
-1. **Header** (markdown): `# Module Name` + one-line description
-2. **Module declaration**: `#| default_exp module_name`
-3. **Imports**: `#| hide` cell for nbdev imports, then `#| export` cell for library imports
-4. **Implementation sections**: numbered, each following the pattern below
-5. **Summary**: `## Summary and Next Steps` at the end
-
-## Section Pattern
-
-Each function follows explore → export → demo:
+Each exported function gets its own H2 section with four subsections in order:
 
 ```
-## N. Feature Name
+## `function_name`
 
-### 🔍 Explore: Understand the problem
-[investigation cells — no #| export]
+### Explore
+[inspect data, test approaches, prototype logic — no #| export]
 
-### 🔍 Explore: Build the function_name()
-[final exploration before implementation]
-
+### Define
 #| export
-def function_name(...):
-    """Google-style docstring."""
+def function_name(
+    text:str,        # The input text to process
+    normalize:bool=True  # Apply Unicode normalization?
+) -> str:            # The processed text
+    "Process `text` for downstream use."
     ...
 
-### ✅ Demo: Test function_name()
-[validation cells — no #| export]
+### Examples
+[executable cells showing behavior — basic usage first, then each parameter]
+
+### Tests
+test_eq(function_name("hello"), "hello")
+test_fail(lambda: function_name(None), contains="expected str")
 ```
 
-## Docstring Style
+## Docstring and Parameter Style
 
-Google-style with Args, Returns, Raises, Note sections:
-```python
-def function_name(arg1, arg2):
-    """
-    Brief one-line description.
+- **Single-line docstrings** — elaborate in Examples cells, not in the docstring
+- **Docments** — document parameters with inline comments on the signature (nbdev renders these as a parameter table automatically)
+- **Type annotations** on every parameter and return value
+- NO Google-style Args/Returns/Raises sections
 
-    Longer context about behavior and purpose.
+## Notebook-Level Structure
 
-    Args:
-        arg1: Description
-        arg2: Description
+1. **Title**: `# Module Name` + `> One-line description`
+2. **Module declaration**: `#| default_exp module_name`
+3. **Imports**: `#| hide` cell for nbdev imports, then `#| export` cell for library imports
+4. **Function sections**: Explore → Define → Examples → Tests (repeated per function)
+5. **Closing**: `nbdev_export()` if needed
 
-    Returns:
-        Description of return value
-    """
-```
+## Testing
 
-## Code Style
-
-- **Naming**: descriptive `snake_case` for functions/variables, `UPPER_CASE` for constants
-- **Imports**: explicit imports (not `import *`), grouped: stdlib → third-party → local
-- **Comments**: explain WHY, not WHAT. No narration comments.
-- **Magic values**: extract to constants or configuration
+- Use `test_eq` for equality, `test_fail` for error cases, plain `assert` otherwise
+- Every code cell runs as a test — add assertions to Examples when it doesn't hurt readability
+- Tests section is for focused validation: edge cases, boundary conditions, type checks
 
 ## Markdown Headers
 
 - `#` — notebook title (once)
-- `##` — major sections (numbered: "1. Feature Name")
-- `###` — cell labels (🔍 Explore: / ✅ Demo:)
+- `##` — function name (`` ## `function_name` ``)
+- `###` — section labels (Explore / Define / Examples / Tests)
+
+## Full Reference
+
+See [docs/notebook-style-guide.md](docs/notebook-style-guide.md) for the complete style guide.

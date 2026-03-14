@@ -64,10 +64,10 @@ jupyter lab
 **Always run:**
 
 ```bash
-nbdev-prepare
+dev-prepare
 ```
 
-This does four things:
+This updates the project structure diagram, then runs `nbdev-prepare` which:
 1. **Export** — converts notebooks to Python modules
 2. **Test** — runs all code cells as tests
 3. **Clean** — strips notebook metadata
@@ -85,36 +85,70 @@ GitHub Actions will automatically run tests, build documentation, and deploy to 
 
 ## Project Structure
 
+<!-- PROJECT-STRUCTURE-START -->
 ```
 {{PROJECT_NAME}}/
-├── nbs/                    # Notebooks (source of truth)
-│   ├── index.ipynb        # Project overview → becomes README.md
-│   ├── 00_core.ipynb      # Core utilities
-│   └── ...                # Other notebooks
-├── {{MODULE_NAME}}/       # Exported Python modules (auto-generated)
-│   ├── core.py           # From 00_core.ipynb
-│   └── ...
-└── docs/                  # Documentation and guides
+├── .github/
+│   └── workflows/                      # CI/CD
+│       ├── deploy.yaml
+│       └── test.yaml
+├── {{MODULE_NAME}}/                    # Exported Python modules (auto-generated)
+│   ├── __init__.py
+│   ├── _modidx.py
+│   └── core.py
+├── docs/                               # Documentation and guides
+│   ├── autoreload-best-practices.md
+│   ├── decision-template.md
+│   ├── fastai-info-map.md
+│   └── notebook-style-guide.md
+├── nbs/                                # Notebooks (source of truth)
+│   ├── 00_core.ipynb                   # Core utilities
+│   ├── _quarto.yml
+│   ├── index.ipynb                     # Project overview → becomes README.md
+│   ├── nbdev.yml
+│   └── styles.css
+├── scripts/
+│   ├── __init__.py
+│   ├── prepare.py
+│   └── project_map.py
+├── .gitattributes
+├── .gitconfig
+├── .gitignore
+├── CONTRIBUTING.md                     # Development workflow (source of truth)
+├── GETTING-STARTED.md
+├── LICENSE
+├── MANIFEST.in
+├── README.md                           # Auto-generated from nbs/index.ipynb
+├── project-structure.yml
+└── pyproject.toml                      # Project config and dependencies
 ```
+<!-- PROJECT-STRUCTURE-END -->
 
 ## Notebook Conventions
 
-The key directives: `#| export` (send to module), `#| hide` (run but hide from docs), `#| default_exp module_name` (declare target module). Cells with no directive appear in docs but aren't exported — use these for tests and demos.
+The key directives: `#| export` (send to module), `#| hide` (run but hide from docs), `#| default_exp module_name` (declare target module). Cells with no directive appear in docs but aren't exported — use these for examples and tests.
 
-Each function follows the **explore → export → demo** pattern. Write exploration cells to understand the problem, then the `#| export` function, then demo/test cells to validate.
+Each function has its own section in the notebook marked by a level 2 header (`## \`function_name\``). The section serves as a self-contained R&D laboratory for that function — all the context needed to understand, modify, and validate it lives together. The function section follows the **Explore → Define → Examples → Tests** pattern:
 
-For the full style guide (section structure, docstrings, cell labeling, anti-patterns), see [docs/notebook-style-guide.md](docs/notebook-style-guide.md).
+- **Explore** — inspect data, test approaches, build understanding
+- **Define** — the `#| export` cell with short docstring and docments-style parameters
+- **Examples** — executable cells that show behavior (replaces verbose docstrings)
+- **Tests** — inline assertions with `test_eq`, `test_fail`, and `assert`
+
+For the full style guide, see [docs/notebook-style-guide.md](docs/notebook-style-guide.md).
 
 ## Common Tasks
 
 | Task | Command |
 |------|---------|
+| Full prepare (before commit) | `dev-prepare` |
 | Export notebooks to .py | `nbdev-export` |
 | Run all tests | `nbdev-test` |
 | Clean notebook metadata | `nbdev-clean` |
 | Build documentation | `nbdev-docs` |
 | Preview documentation | `nbdev-preview` |
-| Full prepare (before commit) | `nbdev-prepare` |
+| Update structure diagram only | `python scripts/project_map.py update` |
+| Check structure diagram is current | `python scripts/project_map.py check` |
 
 ## Troubleshooting
 
@@ -150,7 +184,7 @@ nbdev-test
 **Never edit `README.md` directly.** Edit `nbs/index.ipynb` instead, then run:
 
 ```bash
-nbdev-prepare
+dev-prepare
 ```
 
 ## Resources

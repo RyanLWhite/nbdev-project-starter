@@ -14,7 +14,7 @@ A new project with:
 - **Cursor rules** for nbdev workflow (notebooks as source of truth, export directives, autoreload guidance)
 - **`CONTRIBUTING.md`** with complete nbdev development workflow
 - **`GETTING-STARTED.md`** quick-reference checklist
-- **`docs/notebook-style-guide.md`** with explore → export → demo pattern
+- **`docs/notebook-style-guide.md`** with Explore → Define → Examples → Tests pattern
 - **`docs/autoreload-best-practices.md`** for module reloading
 - **`docs/fastai-info-map.md`** curated learning resources
 - **`docs/decision-template.md`** for documenting project-specific nbdev decisions
@@ -71,7 +71,7 @@ DEFAULT_PARENT_DIR="$HOME/Code"
 9. Copies CONTRIBUTING.md, GETTING-STARTED.md, docs (with project details substituted)
 10. Installs git hooks (`nbdev-install-hooks`)
 11. Installs package in editable mode (`pip install -e '.[dev]'`)
-12. Runs `nbdev-prepare`
+12. Runs `dev-prepare` (structure update + nbdev checks)
 13. Commits and pushes initial setup
 
 ## After Setup
@@ -84,7 +84,7 @@ jupyter lab
 
 **Daily workflow:**
 1. Edit notebooks in `nbs/`
-2. `nbdev-prepare` before committing
+2. `dev-prepare` before committing
 3. `git add . && git commit -m "..." && git push`
 
 **Enable GitHub Pages** (after first CI pass):
@@ -98,9 +98,9 @@ These conventions are encoded in the Cursor rules, style guide, and contributing
 |---|---|
 | Notebooks are source of truth; never edit `.py` files | Cursor rule, CONTRIBUTING.md |
 | `#\| export`, `#\| hide`, `#\| default_exp` directives | Cursor rule |
-| `nbdev-prepare` before every commit | CONTRIBUTING.md |
-| Explore → Export → Demo notebook pattern | Cursor rule, style guide |
-| Google-style docstrings | Style guide |
+| `dev-prepare` before every commit | CONTRIBUTING.md |
+| Explore → Define → Examples → Tests notebook pattern | Cursor rule, style guide |
+| Short docstrings + docments | Style guide |
 | Autoreload in consumer notebooks only | Cursor rule, autoreload doc |
 | Descriptive `snake_case`, `UPPER_CASE` constants | Style guide |
 | Explicit imports (no `import *`) | Style guide |
@@ -123,7 +123,14 @@ nbdev-project-starter/
     │   └── notebook-conventions.mdc  # Notebook-scoped style rules
     ├── CONTRIBUTING.md            # Development workflow guide
     ├── GETTING-STARTED.md         # Quick-reference checklist
+    ├── project-structure.yml      # Tree map configuration
     ├── nbdev.yml                  # Quarto configuration
+    ├── github-workflows/
+    │   └── test.yaml              # CI workflow with structure check
+    ├── scripts/
+        ├── __init__.py
+        ├── prepare.py             # dev-prepare entrypoint
+        └── project_map.py         # Structure diagram generator
     └── docs/
         ├── notebook-style-guide.md       # Notebook conventions
         ├── autoreload-best-practices.md  # Module reloading guidance

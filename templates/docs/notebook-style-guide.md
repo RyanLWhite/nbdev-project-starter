@@ -1,286 +1,166 @@
 # Notebook Style Guide
 
-> Conventions for writing nbdev notebooks in this project
+> Show, don't tell — every function gets a little R&D laboratory
 
-## Overview
+This project uses [nbdev](https://nbdev.fast.ai/), where notebooks are the single source of truth for code, docs, and tests. Our conventions follow the [nbdev best practices](https://nbdev.fast.ai/tutorials/best_practices.html) with one key structural addition: every exported function is developed through a fixed sequence of sections.
 
-Notebooks serve three purposes:
-1. **Documentation** — explaining concepts and approaches
-2. **Implementation** — containing the actual source code (with `#| export`)
-3. **Testing** — demonstrating and validating functionality
+## The Function Section Pattern
 
-## Notebook Structure
+Each exported function gets its own H2 section. Within that section, four subsections appear in order:
 
-### 1. Header Cell (Markdown)
+```
+## `function_name`
+
+### Explore
+
+### Define
+
+### Examples
+
+### Tests
+```
+
+This is the heart of the style guide. Everything else supports it.
+
+### Explore
+
+The spin-up section. Build understanding before writing the function.
+
+- Inspect inputs, data shapes, edge cases
+- Try out APIs, libraries, approaches
+- Prototype logic incrementally in short cells
+- No `#| export` — this is scratch work that becomes documentation
+
+Explore cells answer the question: *what do I need to know before I can write this function?*
+
+### Define
+
+The exported function definition. One cell, one function.
+
+```python
+#| export
+def function_name(
+    text:str,        # The input text to process
+    normalize:bool=True  # Apply Unicode normalization?
+) -> str:            # The processed text
+    "Process `text` for downstream use."
+    ...
+```
+
+Key conventions for the definition:
+
+- **Short docstring** — a single line is usually enough. Elaborate in Examples, not here.
+- **Docments** — document parameters with inline comments directly on the signature. nbdev renders these into a clean parameter table automatically. No Args/Returns/Raises sections needed.
+- **Type annotations** — use them on every parameter and the return value.
+
+### Examples
+
+Everything that would normally live in a docstring goes here instead — as executable cells with real outputs. This is the biggest advantage of developing in notebooks: instead of pasting code into plaintext, you run it.
+
+- Start with basic usage, then cover each parameter
+- Show real inputs and outputs
+- Include plots, tables, printed output — whatever makes the behavior clear
+- Use markdown cells between code cells to explain non-obvious behavior
+- Reference related functions with backtick-doclinks (e.g., `` `other_function` ``)
+
+### Tests
+
+Validate the function with inline assertions. Every code cell in nbdev runs as a test, so assertions here are real CI checks.
+
+```python
+from fastcore.test import test_eq, test_fail
+
+test_eq(function_name("hello"), "hello")
+test_eq(function_name("café", normalize=True), "café")
+```
+
+- Use `test_eq` for equality checks — it prints both sides on failure
+- Use `test_fail` to document error cases with real failing code
+- Use plain `assert` when `test_eq` doesn't fit
+- Keep each cell focused on one aspect of behavior
+
+## Notebook-Level Structure
+
+### Title and Subtitle
+
+Every notebook starts with an H1 title and a blockquote subtitle:
 
 ```markdown
 # Module Name
 
-> Brief one-line description of what this module does
-
-Additional context about the module's purpose, key features, or important notes.
+> One-line description of what this module does
 ```
 
-### 2. Module Declaration
+### Module Declaration
 
 ```python
 #| default_exp module_name
 ```
 
-This tells nbdev which module to export to (e.g., `{{MODULE_NAME}}.module_name`).
+### Imports
 
-### 3. Imports
+Hidden imports first, then exported imports:
 
 ```python
 #| hide
 from nbdev.showdoc import *
 ```
 
-Then export block:
-
 ```python
 #| export
 from pathlib import Path
-import pandas as pd
-# ... other imports
+import numpy as np
 ```
 
-### 4. Implementation Sections
+### Function Sections
 
-Each major section follows a consistent pattern:
+The body of the notebook is a sequence of function sections following the Explore → Define → Examples → Tests pattern described above.
 
-```
-## Section Title
+### Closing
 
-Brief description of what this section accomplishes.
+End with `nbdev_export()` if needed, and optionally a brief summary of what the module provides.
 
-### 🔍 Explore: [What we're exploring]
-[Exploration cells that inspect data, test ideas, build understanding]
+## Docstring and Parameter Style
 
-### 🔍 Explore: [Build the function_name()]
-[Final exploration before implementation]
-
-[#| export function definition]
-
-### ✅ Demo: [What we're testing]
-[Demo cells that test the function]
-```
-
-## Cell Types and Labels
-
-Each function will have multiple cell types dedicated to it, so that this section of the notebook is a little R&D laboratory for the function.
-
-### Exploration Cells: `### 🔍 Explore:`
-
-**Purpose**: Inspect data, test ideas, and build understanding before implementing
-
-**When to use**:
-- Examining raw data structure
-- Testing an approach or API
-- Understanding edge cases
-- Building up logic incrementally
-- Experimenting with different approaches
-
-**Characteristics**:
-- Come *before* the functionality they support
-- May contain temporary/experimental code
-- Focus on investigation and learning
-- No `#| export` directive
-
-**Examples**:
-```markdown
-### 🔍 Explore: Understand the input format
-
-### 🔍 Explore: Test the parsing approach
-
-### 🔍 Explore: Build the process_data() function
-```
-
-The "Build the..." variant indicates we're about to define the exported function.
-
-### Demo Cells: `### ✅ Demo:`
-
-**Purpose**: Test and validate exported functions
-
-**When to use**:
-- Testing a newly defined function
-- Showing example usage
-- Validating edge cases
-- Demonstrating filters or parameters
-
-**Characteristics**:
-- Come *after* the function definition
-- Call the exported function(s)
-- Show expected output
-- May include assertions or comparisons
-- No `#| export` directive
-
-**Examples**:
-```markdown
-### ✅ Demo: Test process_data()
-
-### ✅ Demo: Test with edge cases
-
-### ✅ Demo: Visual demonstration of output
-```
-
-### Export Cells: `#| export`
-
-**Purpose**: Define production code that will be exported to the module
-
-**Characteristics**:
-- Include `#| export` directive at the top
-- Contain complete, production-ready functions
-- Include comprehensive docstrings
-- Follow the exploration cells that led to them
-- Come before the demo cells that test them
-
-## Section Organization Pattern
-
-Follow this pattern for each feature/function:
-
-```
-## N. Feature Name
-
-Brief description
-
-### 🔍 Explore: Understand the problem
-[Investigation cell(s)]
-
-### 🔍 Explore: Test the approach
-[More investigation cells as needed]
-
-### 🔍 Explore: Build the function_name()
-[Final exploration showing the logic]
-
-[#| export function definition with full docstring]
-
-### ✅ Demo: Test function_name()
-[Basic test]
-
-### ✅ Demo: Test with edge cases
-[Additional tests as needed]
-```
-
-## Docstring Style
-
-Use Google-style docstrings with clear sections:
+Follow the [docments](https://fastcore.fast.ai/docments.html) convention. Parameters are documented with inline comments on the signature itself:
 
 ```python
-def function_name(arg1, arg2, optional_arg=None):
-    """
-    Brief one-line description.
-
-    Longer description with more context, explaining what the function does,
-    why it exists, and any important notes about its behavior.
-
-    Args:
-        arg1: Description of arg1
-        arg2: Description of arg2
-        optional_arg: Description of optional_arg (default: None)
-
-    Returns:
-        Description of what's returned
-
-    Raises:
-        ValueError: When this specific error occurs
-
-    Note:
-        Important notes, caveats, or usage guidance
-    """
+#| export
+def draw_n(
+    n:int,             # Number of cards to draw
+    replace:bool=True  # Draw with replacement?
+) -> list:             # List of cards
+    "Draw `n` cards."
+    ...
 ```
 
-## Code Style
+This single-line docstring plus inline docments is all you need. nbdev generates the parameter table for docs automatically. Put the detailed explanations in the Examples section where you can actually *run* them.
 
-### Imports
-- Group imports: standard library, third-party, local
-- Use explicit imports (not `import *`)
-- Import only what you need
+## What to Export
 
-### Configuration
-- Extract magic values to constants (e.g., `MAX_RETRIES = 3`)
-- Put reusable helpers in `core.ipynb` when used across multiple notebooks
-- Use helper functions for recurring patterns
+Export functions that are reused across notebooks, well-tested, and conceptually complete. Do **not** export one-off exploration, ad-hoc inspection, debugging cells, or prototypes.
 
-### Variable Naming
-- Use descriptive names: `processed_items` not `pi`
-- Use `snake_case` for functions and variables
-- Use `UPPER_CASE` for constants
+## Testing Philosophy
 
-### General
-- Comments explain *why*, not *what*
-- Keep functions focused — one function, one job
-- Use `pathlib.Path` for file paths
-- Use f-strings for formatting
+Every code cell runs as a test during `nbdev_test`. Use this to your advantage:
 
-## Testing in Notebooks
+- **Examples are tests.** Add assertions to your example cells when it doesn't hurt readability.
+- **Error cases are tests.** Use `test_fail` instead of prose descriptions of what raises.
+- **The Tests section is for focused validation** — edge cases, boundary conditions, type checking — that doesn't belong in the narrative flow of Examples.
 
-### Demonstration Tests
-- Use exploration cells to understand edge cases
-- Use demo cells to validate the exported function
-- Show both successful cases and filtered results
-- Include visual output (DataFrames, printed values)
+## Directives Quick Reference
 
-### Inline Assertions
-
-```python
-result = my_function(sample_input)
-assert len(result) > 0, "Expected non-empty result"
-
-from fastcore.test import test_eq
-test_eq(my_function(2, 3), 5)
-```
-
-## Summary Cell
-
-End with a summary markdown cell:
-
-```markdown
-## Summary and Next Steps
-
-### Completed
-- Feature 1
-- Feature 2
-
-### Remaining
-- Next feature
-
-### Next Steps
-Brief description of what comes next.
-```
-
-## Markdown Headers
-
-- `#` — notebook title (once)
-- `##` — major sections (numbered: "1. Feature Name")
-- `###` — cell labels (🔍 Explore: / ✅ Demo:)
-- `####` — sub-sections within exploration (use sparingly)
-
-## Anti-Patterns to Avoid
-
-- **Don't** use generic comments like "# Test function" → **Do** use labeled headers: "### ✅ Demo: Test process_data()"
-- **Don't** mix exploration and production code in one cell → **Do** separate exploration cells from `#| export` cells
-- **Don't** leave magic strings scattered through code → **Do** extract to constants
-- **Don't** create new notebooks/modules without considering cohesion → **Do** group related functionality in the same module
-
-## Relationship to fastai Style Guide
-
-This guide complements the [fastai coding style guide](https://docs.fast.ai/dev/style.html). Shared principles:
-
-- **Brevity facilitates reasoning** — keep concepts on one screen when possible
-- **Expository programming** — notebooks support experimentation and explanation
-- **Comments explain WHY not WHAT** — clear code over verbose comments
-- **One line = one idea** — compact layouts for conceptually related code
-
-What we adopt from fastai:
-- ~160 character line width
-- Horizontal alignment for similar operations
-- Modern Python features (comprehensions, f-strings, pathlib)
-- Vertical space economy for related code
+| Directive | Effect |
+|-----------|--------|
+| `#\| default_exp module_name` | Declares the target module |
+| `#\| export` | Exports the cell to the module |
+| `#\| hide` | Runs the cell but hides it from docs |
+| `#\| eval: false` | Skips execution during `nbdev_test` |
+| No directive | Appears in docs, not exported |
 
 ## References
 
-- [fastai Coding Style Guide](https://docs.fast.ai/dev/style.html)
-- [nbdev Documentation](https://nbdev.fast.ai/)
-- [nbdev Best Practices](https://nbdev.fast.ai/tutorials/best_practices.html)
-- [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html) — docstring format reference
+- [nbdev Best Practices](https://nbdev.fast.ai/tutorials/best_practices.html) — the annotated `numpy.all` example is the gold standard
+- [fastcore.docments](https://fastcore.fast.ai/docments.html) — parameter documentation style
+- [fastcore.test](https://fastcore.fast.ai/test.html) — `test_eq`, `test_fail`, and friends
+- [fastai Coding Style](https://docs.fast.ai/dev/style.html) — brevity, horizontal alignment, expository programming
