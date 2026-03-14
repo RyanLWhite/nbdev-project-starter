@@ -28,7 +28,8 @@ Do NOT export: one-off exploration, ad-hoc inspection, debugging cells, prototyp
 
 - `nbdev-export` — export notebooks to `.py` modules (run frequently during dev)
 - `nbdev-test` — run all notebook cells as tests
-- `nbdev-prepare` — export + test + clean (run before every commit)
+- `nbdev-prepare` — export + test + clean
+- `dev-prepare` — update project structure diagram + `nbdev-prepare` (run before every commit)
 
 ## Autoreload
 

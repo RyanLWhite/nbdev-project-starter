@@ -256,6 +256,15 @@ classifiers = [
 ]
 dependencies = []
 
+[project.optional-dependencies]
+dev = [
+    "nbdev",
+    "pyyaml",
+]
+
+[project.scripts]
+dev-prepare = "scripts.prepare:main"
+
 [project.urls]
 Repository = "https://github.com/$GITHUB_USERNAME/$PROJECT_NAME"
 Documentation = "https://$GITHUB_USERNAME.github.io/$PROJECT_NAME/"
@@ -267,7 +276,7 @@ $MODULE_NAME = "${MODULE_NAME}._modidx:d"
 version = {attr = "${MODULE_NAME}.__version__"}
 
 [tool.setuptools.packages.find]
-include = ["$MODULE_NAME"]
+include = ["$MODULE_NAME", "scripts"]
 
 [tool.nbdev]
 lib_name = "$MODULE_NAME"
@@ -321,6 +330,20 @@ if [ -d "$TEMPLATES_DIR" ]; then
     copy_template "$TEMPLATES_DIR/GETTING-STARTED.md" "GETTING-STARTED.md"
     print_ok "CONTRIBUTING.md + GETTING-STARTED.md"
 
+    # scripts/ utilities
+    mkdir -p scripts
+    cp "$TEMPLATES_DIR/scripts/__init__.py" "scripts/__init__.py"
+    cp "$TEMPLATES_DIR/scripts/project_map.py" "scripts/project_map.py"
+    cp "$TEMPLATES_DIR/scripts/prepare.py" "scripts/prepare.py"
+    chmod +x scripts/project_map.py
+    print_ok "scripts/ tooling"
+
+    # project structure config + CI
+    copy_template "$TEMPLATES_DIR/project-structure.yml" "project-structure.yml"
+    mkdir -p .github/workflows
+    cp "$TEMPLATES_DIR/github-workflows/test.yaml" ".github/workflows/test.yaml"
+    print_ok "project structure config + CI workflow"
+
     # docs/
     mkdir -p docs
     copy_template "$TEMPLATES_DIR/docs/notebook-style-guide.md" "docs/notebook-style-guide.md"
@@ -349,13 +372,13 @@ print_ok "Git hooks installed"
 pip install -e '.[dev]' -q
 print_ok "Package installed in editable mode"
 
-# --- nbdev-prepare ---
+# --- dev-prepare ---
 
-print_info "Running nbdev-prepare..."
-if nbdev-prepare; then
-    print_ok "nbdev-prepare passed"
+print_info "Running dev-prepare..."
+if dev-prepare; then
+    print_ok "dev-prepare passed"
 else
-    print_info "nbdev-prepare had issues (sometimes expected on initial setup)"
+    print_info "dev-prepare had issues (sometimes expected on initial setup)"
 fi
 
 # --- Initial commit ---
@@ -369,8 +392,9 @@ git commit -m "Initial nbdev project setup
 - Install Cursor rules for nbdev workflow
 - Add CONTRIBUTING.md and GETTING-STARTED.md
 - Add notebook style guide and reference docs
+- Add project-structure tooling and dev-prepare command
 - Install git hooks for clean notebooks
-- Run initial nbdev-prepare"
+- Run initial dev-prepare"
 
 git push -u origin master 2>/dev/null || git push -u origin main
 print_ok "Pushed to GitHub"
@@ -391,7 +415,7 @@ echo "  jupyter lab"
 echo ""
 echo -e "${YELLOW}Daily workflow:${NC}"
 echo "  1. Edit notebooks in nbs/"
-echo "  2. nbdev-prepare"
+echo "  2. dev-prepare"
 echo "  3. git add . && git commit -m '...' && git push"
 echo ""
 echo -e "${YELLOW}GitHub Pages (after first CI pass):${NC}"

@@ -1,0 +1,30 @@
+# Project Structure Configuration
+# Used by scripts/project_map.py to generate and validate the structure diagram
+
+ignore:
+  - .git
+  - __pycache__
+  - "*.egg-info"
+  - _proc
+  - .cursor
+  - venv
+  - .venv
+  - .ipynb_checkpoints
+  - "*.pyc"
+  - .DS_Store
+
+max_depth: 2
+
+descriptions:
+  nbs/:                       "Notebooks (source of truth)"
+  nbs/index.ipynb:            "Project overview → becomes README.md"
+  nbs/00_core.ipynb:          "Core utilities"
+  {{MODULE_NAME}}/:           "Exported Python modules (auto-generated)"
+  docs/:                      "Documentation and guides"
+  .github/workflows/:         "CI/CD"
+  pyproject.toml:             "Project config and dependencies"
+  CONTRIBUTING.md:            "Development workflow (source of truth)"
+  README.md:                  "Auto-generated from nbs/index.ipynb"
+
+embed_in:
+  - CONTRIBUTING.md
