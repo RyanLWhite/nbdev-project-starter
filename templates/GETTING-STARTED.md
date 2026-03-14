@@ -28,7 +28,7 @@ nbdev-install-hooks
 ```bash
 source venv/bin/activate  # Every time!
 jupyter lab               # Edit notebooks
-nbdev-prepare            # Before committing
+dev-prepare              # Before committing
 git add . && git commit -m "..." && git push
 ```
 
@@ -47,7 +47,7 @@ git add . && git commit -m "..." && git push
 1. **Always activate venv first:** `source venv/bin/activate`
 2. **Never edit `.py` files** — edit notebooks instead
 3. **Never edit README.md** — edit `nbs/index.ipynb` instead
-4. **Run `nbdev-prepare` before every commit**
+4. **Run `dev-prepare` before every commit**
 
 ## Troubleshooting
 

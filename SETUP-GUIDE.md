@@ -170,12 +170,13 @@ jupyter lab
 | `nbdev-clean` | Clean notebook metadata |
 | `nbdev-docs` | Build documentation site |
 | `nbdev-preview` | Preview docs locally |
-| `nbdev-prepare` | Export + test + clean + README (run before commits) |
+| `nbdev-prepare` | Export + test + clean + README |
+| `dev-prepare` | Update structure diagram + `nbdev-prepare` (recommended before commits when starter templates are installed) |
 
 ### Typical Cycle
 
 1. Edit notebooks in JupyterLab
-2. `nbdev-prepare`
+2. `dev-prepare` (or `nbdev-prepare` if project does not include starter scripts)
 3. `git add . && git commit -m "..." && git push`
 
 ---
@@ -230,7 +231,7 @@ nbdev commands use **hyphens**, not underscores:
 - [ ] Verify module directory name matches `pyproject.toml`
 - [ ] Run `nbdev-install-hooks`
 - [ ] Run `pip install -e '.[dev]'`
-- [ ] Run `nbdev-prepare`
+- [ ] Run `dev-prepare` (or `nbdev-prepare` if unavailable)
 - [ ] Commit and push initial setup
 - [ ] Wait for CI to pass
 - [ ] Enable GitHub Pages (Settings → Pages → gh-pages branch)
