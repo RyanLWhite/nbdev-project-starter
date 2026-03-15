@@ -101,7 +101,7 @@ The fastest learning is **reading the repos that embody the style**:
 
 
 [1]: https://nbdev.fast.ai/getting_started.html "Getting Started - nbdev - Fast.ai"
-[2]: https://nbdev.fast.ai/tutorials/tutorial.htm "End-To-End Walkthrough - nbdev"
+[2]: https://nbdev.fast.ai/tutorials/tutorial.html "End-To-End Walkthrough - nbdev"
 [3]: https://nbdev.fast.ai/tutorials/best_practices.html "Notebook Best Practices - nbdev - Fast.ai"
 [4]: https://nbdev.fast.ai/tutorials/pre_commit.html "Pre-Commit Hooks - nbdev - Fast.ai"
 [5]: https://docs.fast.ai/dev/style.html "fastai coding style"
