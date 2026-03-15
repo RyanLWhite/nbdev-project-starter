@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eE -o pipefail
 
 # ============================================================================
 # create-project.sh — Automated nbdev project creation
@@ -52,6 +52,29 @@ print_ok()     { echo -e "${GREEN}  ✓ $1${NC}"; }
 print_info()   { echo -e "${YELLOW}  → $1${NC}"; }
 print_err()    { echo -e "${RED}  ✗ $1${NC}"; }
 
+# Track side effects so failures can print cleanup guidance.
+REMOTE_CREATED=0
+PROJECT_ROOT=""
+
+cleanup_on_error() {
+    local exit_code=$?
+    print_err "Setup failed before completion."
+
+    if [ "$REMOTE_CREATED" -eq 1 ] && [ -n "$GITHUB_USERNAME" ] && [ -n "$PROJECT_NAME" ]; then
+        echo "  Remote repo may still exist: https://github.com/$GITHUB_USERNAME/$PROJECT_NAME"
+        echo "  Cleanup command: gh repo delete \"$GITHUB_USERNAME/$PROJECT_NAME\" --yes"
+    fi
+
+    if [ -n "$PROJECT_ROOT" ] && [ -d "$PROJECT_ROOT" ]; then
+        echo "  Local directory created: $PROJECT_ROOT"
+        echo "  Cleanup command: rm -rf \"$PROJECT_ROOT\""
+    fi
+
+    exit "$exit_code"
+}
+
+trap cleanup_on_error ERR
+
 # --- Prerequisite check ---
 
 print_header "Checking Prerequisites"
@@ -103,6 +126,10 @@ if [ -z "$PROJECT_NAME" ]; then
     print_err "Project name is required"
     exit 1
 fi
+if [[ ! "$PROJECT_NAME" =~ ^[a-z0-9]+(-[a-z0-9]+)*$ ]]; then
+    print_err "Project name must match: lowercase letters/numbers with optional hyphens"
+    exit 1
+fi
 
 MODULE_NAME="${PROJECT_NAME//-/_}"
 
@@ -124,6 +151,19 @@ IS_PRIVATE="${IS_PRIVATE:-y}"
 read -p "  Parent directory (default: $DEFAULT_PARENT_DIR): " PARENT_DIR
 PARENT_DIR="${PARENT_DIR:-$DEFAULT_PARENT_DIR}"
 PARENT_DIR="${PARENT_DIR/#\~/$HOME}"
+
+if [ ! -d "$PARENT_DIR" ]; then
+    print_err "Parent directory does not exist: $PARENT_DIR"
+    exit 1
+fi
+if [ ! -w "$PARENT_DIR" ]; then
+    print_err "Parent directory is not writable: $PARENT_DIR"
+    exit 1
+fi
+if [ -e "$PARENT_DIR/$PROJECT_NAME" ]; then
+    print_err "Target path already exists: $PARENT_DIR/$PROJECT_NAME"
+    exit 1
+fi
 
 read -p "  License (default: $DEFAULT_LICENSE): " LICENSE
 LICENSE="${LICENSE:-$DEFAULT_LICENSE}"
@@ -151,6 +191,13 @@ fi
 # Execution
 # ============================================================================
 
+print_header "Preflight Checks"
+if gh repo view "$GITHUB_USERNAME/$PROJECT_NAME" >/dev/null 2>&1; then
+    print_err "GitHub repository already exists: $GITHUB_USERNAME/$PROJECT_NAME"
+    exit 1
+fi
+print_ok "Target repo name is available"
+
 # --- Create GitHub repo ---
 
 print_header "Creating GitHub Repository"
@@ -162,6 +209,7 @@ if ! gh repo create "$GITHUB_USERNAME/$PROJECT_NAME" $PRIVACY_FLAG --description
     exit 1
 fi
 print_ok "GitHub repo created: $GITHUB_USERNAME/$PROJECT_NAME"
+REMOTE_CREATED=1
 
 # --- Clone ---
 
@@ -199,11 +247,11 @@ print_ok "All tools installed"
 
 print_header "Initializing nbdev"
 
-NBDEV_CMD="nbdev-new --user \"$GITHUB_USERNAME\" --author \"$AUTHOR_NAME\""
 if [ -n "$AUTHOR_EMAIL" ]; then
-    NBDEV_CMD="$NBDEV_CMD --author_email \"$AUTHOR_EMAIL\""
+    nbdev-new --user "$GITHUB_USERNAME" --author "$AUTHOR_NAME" --author_email "$AUTHOR_EMAIL"
+else
+    nbdev-new --user "$GITHUB_USERNAME" --author "$AUTHOR_NAME"
 fi
-eval $NBDEV_CMD
 print_ok "nbdev initialized"
 
 # --- Rename module directory if needed ---
@@ -258,6 +306,8 @@ dependencies = []
 
 [project.optional-dependencies]
 dev = [
+    "jupyterlab",
+    "jupyterlab-quarto",
     "nbdev",
     "pyyaml",
 ]
@@ -308,13 +358,26 @@ print_header "Installing Project Templates"
 copy_template() {
     local src="$1"
     local dest="$2"
+    local project_esc module_esc github_esc author_esc email_esc description_esc
+
+    escape_sed_replacement() {
+        printf '%s' "$1" | sed -e 's/[\\&|]/\\&/g'
+    }
+
+    project_esc="$(escape_sed_replacement "$PROJECT_NAME")"
+    module_esc="$(escape_sed_replacement "$MODULE_NAME")"
+    github_esc="$(escape_sed_replacement "$GITHUB_USERNAME")"
+    author_esc="$(escape_sed_replacement "$AUTHOR_NAME")"
+    email_esc="$(escape_sed_replacement "$AUTHOR_EMAIL")"
+    description_esc="$(escape_sed_replacement "$DESCRIPTION")"
+
     mkdir -p "$(dirname "$dest")"
-    sed -e "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" \
-        -e "s|{{MODULE_NAME}}|$MODULE_NAME|g" \
-        -e "s|{{GITHUB_USERNAME}}|$GITHUB_USERNAME|g" \
-        -e "s|{{AUTHOR_NAME}}|$AUTHOR_NAME|g" \
-        -e "s|{{AUTHOR_EMAIL}}|$AUTHOR_EMAIL|g" \
-        -e "s|{{DESCRIPTION}}|$DESCRIPTION|g" \
+    sed -e "s|{{PROJECT_NAME}}|$project_esc|g" \
+        -e "s|{{MODULE_NAME}}|$module_esc|g" \
+        -e "s|{{GITHUB_USERNAME}}|$github_esc|g" \
+        -e "s|{{AUTHOR_NAME}}|$author_esc|g" \
+        -e "s|{{AUTHOR_EMAIL}}|$email_esc|g" \
+        -e "s|{{DESCRIPTION}}|$description_esc|g" \
         "$src" > "$dest"
 }
 
