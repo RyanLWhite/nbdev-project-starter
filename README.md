@@ -152,6 +152,14 @@ Edit files in `templates/` directly. Placeholders use `{{VARIABLE}}` syntax:
 
 Add files to `templates/` and update the "Copy templates" section in `create-project.sh` to include them.
 
+## Maintaining This Starter
+
+Keep starter changes aligned with the official nbdev workflow and run consistency checks before committing:
+
+```bash
+python3 tools/validate_starter.py
+```
+
 ## Resources
 
 - [nbdev Documentation](https://nbdev.fast.ai/)
